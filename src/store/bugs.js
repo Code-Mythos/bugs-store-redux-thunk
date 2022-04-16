@@ -1,36 +1,30 @@
-import { createAction } from "@reduxjs/toolkit";
+import { createAction, createReducer } from "@reduxjs/toolkit";
 
 // Action creators
 // createAction returns a function that accepts a type and payload
 // Indeed, it is an action creator
-const bugAdded = createAction("bugs/bugAdded");
-const bugResolved = createAction("bugs/bugResolved");
-const bugRemoved = createAction("bugs/bugRemoved");
+export const bugAdded = createAction("bugs/bugAdded");
+export const bugResolved = createAction("bugs/bugResolved");
+export const bugRemoved = createAction("bugs/bugRemoved");
 
 // Reducer
 let lastId = 0;
 
-export default function reducer(state = [], action) {
-  switch (action.type) {
-    case bugAdded.type:
-      return [
-        ...state,
-        {
-          id: ++lastId,
-          description: action.payload.description,
-          resolved: false,
-        },
-      ];
+export default createReducer([], {
+  [bugAdded.type]: (state, action) => {
+    state.push({
+      id: ++lastId,
+      ...action.payload,
+    });
+  },
 
-    case bugRemoved.type:
-      return state.filter((bug) => bug.id !== action.payload.id);
+  [bugResolved.type]: (state, action) => {
+    const index = state.findIndex((bug) => bug.id === action.payload.id);
+    state[index].resolved = true;
+  },
 
-    case bugResolved.type:
-      return state.map((bug) =>
-        bug.id !== action.payload.id ? bug : { ...bug, resolved: true }
-      );
-
-    default:
-      return state;
-  }
-}
+  [bugRemoved.type]: (state, action) => {
+    const index = state.findIndex((bug) => bug.id === action.payload.id);
+    state.splice(index, 1);
+  },
+});
