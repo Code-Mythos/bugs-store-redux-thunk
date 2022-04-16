@@ -1,9 +1,10 @@
-import { createStore } from "redux";
+// With Redux Toolkit we do not need to import devToolsEnhancer and also
+// we can aply asynchroneous logic to the store (dispatch asynchroneously)
+import { configureStore } from "@reduxjs/toolkit";
 import reducer from "./bugs";
-import { devToolsEnhancer } from "redux-devtools-extension";
 
-export default function configureStore() {
-  const store = createStore(reducer, devToolsEnhancer({ trace: true }));
-
-  return store;
+export default function () {
+  return configureStore({
+    reducer: reducer,
+  });
 }
