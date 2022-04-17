@@ -25,5 +25,8 @@ store.dispatch(bugResolved({ id: 1 }));
 
 console.log("State of the store:", store.getState());
 
-const unresolvedBugs = getUnResolvedBugs(store.getState());
-console.log("Unresolved bugs:", unresolvedBugs);
+const x = getUnResolvedBugs(store.getState());
+const y = getUnResolvedBugs(store.getState());
+console.log("Unresolved bugs X:", x);
+console.log("Unresolved bugs Y:", y);
+console.log("Are X and Y the same?", x === y);
