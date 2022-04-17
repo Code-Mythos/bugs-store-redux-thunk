@@ -1,6 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-// Create both the reducer and the action creators in one step using createSlice.
 let lastId = 0;
 
 const slice = createSlice({
@@ -35,3 +34,7 @@ const slice = createSlice({
 
 export const { bugAdded, bugResolved, bugRemoved } = slice.actions;
 export default slice.reducer;
+
+// Selectors
+export const getUnResolvedBugs = (state) =>
+  state.entities.bugs.filter((bug) => !bug.resolved); // state.entities.bugs instead of state.
