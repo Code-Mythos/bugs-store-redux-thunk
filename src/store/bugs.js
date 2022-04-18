@@ -55,7 +55,7 @@ const slice = createSlice({
     },
 
     bugAssignedToUser: (bugsState, action) => {
-      const { bugId, userId } = action.payload;
+      const { id: bugId, userId } = action.payload;
       const index = bugsState.list.findIndex((bug) => bug.id === bugId);
       bugsState.list[index].userId = userId;
     },
@@ -74,6 +74,14 @@ export const {
 export default slice.reducer;
 
 // Action creators
+export const assignBugToUser = ({ bugId: bugId, userId: userId }) =>
+  apiCallBegan({
+    url: `${url}/${bugId}`,
+    method: "patch",
+    data: { userId: userId },
+    onSuccess: bugAssignedToUser.type,
+  });
+
 export const resolveBug = ({ id }) =>
   apiCallBegan({
     // /bugs
