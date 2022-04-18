@@ -11,6 +11,8 @@ import * as apiActions from "../api";
 //     onError: "apiRequestFailed",
 //   },
 // };
+
+// An API (middleware) does not use reducers because, unlike reducers, it implements mutating functions.
 const api = (store) => (next) => async (action) => {
   const { dispatch } = store;
   if (action.type !== apiActions.apiCallBegan.type) return next(action);
@@ -23,7 +25,7 @@ const api = (store) => (next) => async (action) => {
 
   try {
     const response = await axios.request({
-      baseURL: "http://localhost:9001/api",
+      baseURL: "http://localhost:9002/api",
       url,
       method,
       data,
@@ -39,12 +41,12 @@ const api = (store) => (next) => async (action) => {
     }
   } catch (error) {
     // General error handling
-    dispatch(apiActions.apiCallFailed(error));
+    dispatch(apiActions.apiCallFailed(error.message));
     // Specific error handling
     if (onError) {
       dispatch({
         type: onError,
-        payload: error,
+        payload: error.message,
       });
     }
   }

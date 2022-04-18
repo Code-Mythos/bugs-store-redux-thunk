@@ -12,7 +12,10 @@ const slice = createSlice({
     lastFetch: null,
   },
   reducers: {
-    // When apiCallBegan is dispatched, it dispatches bugsReqeusted next
+    bugsRequestFailed: (bugsState, action) => {
+      bugsState.loading = false;
+    },
+
     bugsRequested: (bugsState, action) => {
       bugsState.loading = true;
     },
@@ -59,6 +62,7 @@ const slice = createSlice({
 });
 
 export const {
+  bugsRequestFailed,
   bugsRequested,
   bugsResieved,
   bugAdded,
@@ -76,6 +80,7 @@ export const loadBugs = () =>
     url: url,
     onStart: bugsRequested.type,
     onSuccess: bugsResieved.type,
+    onError: bugsRequestFailed.type,
   });
 
 // Selectors
