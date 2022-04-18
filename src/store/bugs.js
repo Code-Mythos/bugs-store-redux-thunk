@@ -1,16 +1,21 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { createSelector } from "reselect";
 import { apiCallBegan } from "./api";
+import moment from "moment";
 
 let lastId = 0;
+const url = "/bugs";
+const catchingDurationInMinutes = 1;
 
 const slice = createSlice({
   name: "bugs",
+
   initialState: {
     list: [],
     loading: false,
     lastFetch: null,
   },
+
   reducers: {
     bugsRequestFailed: (bugsState, action) => {
       bugsState.loading = false;
@@ -23,6 +28,7 @@ const slice = createSlice({
     bugsResieved: (bugsState, action) => {
       bugsState.list = action.payload;
       bugsState.loading = false;
+      bugsState.lastFetch = Date.now();
     },
 
     bugAdded: {
@@ -73,15 +79,30 @@ export const {
 export default slice.reducer;
 
 // Action creators
-const url = "/bugs";
+export const loadBugs = () => (dispatch, getState) => {
+  const { lastFetch } = getState().entities.bugs;
 
-export const loadBugs = () =>
-  apiCallBegan({
-    url: url,
-    onStart: bugsRequested.type,
-    onSuccess: bugsResieved.type,
-    onError: bugsRequestFailed.type,
-  });
+  const diffInMinutes = moment().diff(moment(lastFetch), "minutes");
+  if (diffInMinutes < catchingDurationInMinutes) return;
+
+  dispatch(
+    apiCallBegan({
+      url: url,
+      onStart: bugsRequested.type,
+      onSuccess: bugsResieved.type,
+      onError: bugsRequestFailed.type,
+    })
+  );
+};
+
+// // Old implementation of loadBugs
+// export const loadsBugs = () =>
+//   apiCallBegan({
+//     url: url,
+//     onStart: bugsRequested.type,
+//     onSuccess: bugsResieved.type,
+//     onError: bugsRequestFailed.type,
+//   });
 
 // Selectors
 export const getUnResolvedBugs = createSelector(

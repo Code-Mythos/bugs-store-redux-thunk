@@ -25,7 +25,7 @@ const api = (store) => (next) => async (action) => {
 
   try {
     const response = await axios.request({
-      baseURL: "http://localhost:9002/api",
+      baseURL: "http://localhost:9001/api",
       url,
       method,
       data,
