@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { createSelector } from "reselect";
+import { apiCallBegan } from "./api";
 
 let lastId = 0;
 
@@ -11,6 +12,10 @@ const slice = createSlice({
     lastFetch: null,
   },
   reducers: {
+    bugsResieved: (bugsState, action) => {
+      bugsState.list = action.payload;
+    },
+
     bugAdded: {
       reducer(bugsState, action) {
         bugsState.list.push({
@@ -47,9 +52,24 @@ const slice = createSlice({
   },
 });
 
-export const { bugAdded, bugResolved, bugRemoved, bugAssignedToUser } =
-  slice.actions;
+export const {
+  bugsResieved,
+  bugAdded,
+  bugResolved,
+  bugRemoved,
+  bugAssignedToUser,
+} = slice.actions;
 export default slice.reducer;
+
+// Action creators
+const url = "/bugs";
+
+// Using {} do not return anything but just execute the codes inside
+export const loadBugs = () =>
+  apiCallBegan({
+    url: url,
+    onSuccess: bugsResieved.type,
+  });
 
 // Selectors
 export const getUnResolvedBugs = createSelector(
