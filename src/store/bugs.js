@@ -12,8 +12,13 @@ const slice = createSlice({
     lastFetch: null,
   },
   reducers: {
+    bugsRequested: (bugsState, action) => {
+      bugsState.loading = true;
+    },
+
     bugsResieved: (bugsState, action) => {
       bugsState.list = action.payload;
+      bugsState.loading = false;
     },
 
     bugAdded: {
@@ -53,6 +58,7 @@ const slice = createSlice({
 });
 
 export const {
+  bugsRequested,
   bugsResieved,
   bugAdded,
   bugResolved,
@@ -64,10 +70,10 @@ export default slice.reducer;
 // Action creators
 const url = "/bugs";
 
-// Using {} do not return anything but just execute the codes inside
 export const loadBugs = () =>
   apiCallBegan({
     url: url,
+    onStart: bugsRequested.type,
     onSuccess: bugsResieved.type,
   });
 
