@@ -12,6 +12,7 @@ const slice = createSlice({
     lastFetch: null,
   },
   reducers: {
+    // When apiCallBegan is dispatched, it dispatches bugsReqeusted next
     bugsRequested: (bugsState, action) => {
       bugsState.loading = true;
     },
