@@ -6,7 +6,8 @@
   "scripts": {
     "start": "webpack serve --hot --config ./webpack.dev.config.js",
     "test": "jest",
-    "test-watch": "jest --watch"
+    "test-watch": "jest --watch",
+    "coverage": "jest --coverage"
   },
   "keywords": [],
   "author": "A. Bhdr",

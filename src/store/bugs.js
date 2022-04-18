@@ -98,7 +98,8 @@ export const loadBugs = () => (dispatch, getState) => {
   const diffInMinutes = moment().diff(moment(lastFetch), "minutes");
   if (diffInMinutes < catchingDurationInMinutes) return;
 
-  dispatch(
+  // any dispatch return value that is passed to the next dispatch call
+  return dispatch(
     apiCallBegan({
       url: url,
       onStart: bugsRequested.type,
@@ -119,11 +120,11 @@ export const addBug = (bugsState) =>
 // Selectors
 export const getUnResolvedBugs = createSelector(
   (state) => state.entities.bugs,
-  (bugs) => bugs.filter((bug) => !bug.resolved)
+  (bugs) => bugs.list.filter((bug) => !bug.resolved)
 );
 
 export const getBugsByUser = ({ userId }) =>
   createSelector(
     (state) => state.entities.bugs,
-    (bugs) => bugs.filter((bug) => bug.userId === userId)
+    (bugs) => bugs.list.filter((bug) => bug.userId === userId)
   );

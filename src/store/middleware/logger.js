@@ -4,7 +4,7 @@ const logger = (store) => (next) => (action) => {
   // console.log("action", action);
   console.log("Logging!");
 
-  next(action);
+  return next(action);
 };
 
 export default logger;
