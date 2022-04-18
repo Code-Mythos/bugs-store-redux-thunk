@@ -74,6 +74,16 @@ export const {
 export default slice.reducer;
 
 // Action creators
+export const resolveBug = ({ id }) =>
+  apiCallBegan({
+    // /bugs
+    // PATCH /bugs/1
+    url: `${url}/${id}`,
+    method: "PATCH",
+    data: { resolved: true },
+    onSuccess: bugResolved.type,
+  });
+
 export const loadBugs = () => (dispatch, getState) => {
   const { lastFetch } = getState().entities.bugs;
 
