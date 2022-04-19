@@ -117,6 +117,13 @@ export const addBug = (bugsState) =>
     onSuccess: bugAdded.type,
   });
 
+export const removeBug = ({ id }) =>
+  apiCallBegan({
+    url: `${url}/${id}`,
+    method: "delete",
+    onSuccess: bugRemoved.type,
+  });
+
 // Selectors
 export const getUnResolvedBugs = createSelector(
   (state) => state.entities.bugs,

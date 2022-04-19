@@ -76,6 +76,10 @@ describe("bugsSlice", () => {
     expect(bugsSlice().list[0].resolved).not.toBe(true);
   });
 
+  it("assignBugToUser", () => {});
+
+  it("removeBug", () => {});
+
   describe("loading bugs", () => {
     describe("if the bugs exist in the catch", () => {
       it("they should not be fetched from the server again", async () => {
@@ -139,5 +143,7 @@ describe("bugsSlice", () => {
 
       expect(result).toHaveLength(2);
     }); // it: getUnresoledBugs
+
+    it("getBugsByUser", () => {});
   }); // describe: selectors
 }); // describe: bugsSlice
