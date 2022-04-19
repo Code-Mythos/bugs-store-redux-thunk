@@ -1,8 +1,14 @@
-import { addBug, resolveBug, loadBugs } from "../bugs";
+import {
+  addBug,
+  resolveBug,
+  loadBugs,
+  removeBug,
+  assignBugToUser,
+} from "../bugs";
 import configureStore from "../configureStore";
 import axios from "axios";
 import MockAdapter from "axios-mock-adapter";
-import { getUnResolvedBugs } from "./../bugs";
+import { getUnResolvedBugs, getBugsByUser } from "./../bugs";
 
 describe("bugsSlice", () => {
   //
@@ -14,14 +20,37 @@ describe("bugsSlice", () => {
     store = configureStore();
   });
 
-  const bugsSlice = (state) => store.getState().entities.bugs;
-
   const createDummyState = () => ({
     entities: {
       bugs: {
         list: [],
       },
     },
+  });
+
+  const bugsSlice = () => store.getState().entities.bugs;
+
+  it("should removeBug from store if it is removed from server", async () => {
+    const id = 1;
+    mockAxios.onPost("/bugs").reply(200, { id: id });
+    mockAxios.onDelete(`/bugs/${id}`).reply(200, {});
+
+    await store.dispatch(addBug({ description: "a" }));
+    await store.dispatch(removeBug({ id: id }));
+
+    expect(bugsSlice().list).toEqual([]);
+  });
+
+  it("should not removeBug from store if it is not removed from server", async () => {
+    const id = 1;
+    const bugData = { id: id };
+    mockAxios.onPost("/bugs").reply(200, bugData);
+    mockAxios.onDelete(`/bugs/${id}`).reply(500);
+
+    await store.dispatch(addBug({ description: "a" }));
+    await store.dispatch(removeBug({ id: id }));
+
+    expect(bugsSlice().list).toEqual([bugData]);
   });
 
   it("should add the bug to the store if it's saved to the server", async () => {
@@ -76,9 +105,31 @@ describe("bugsSlice", () => {
     expect(bugsSlice().list[0].resolved).not.toBe(true);
   });
 
-  it("assignBugToUser", () => {});
+  it("should assignBugToUser in the store if there is not any error on the server side", async () => {
+    const userId = 1;
+    const bugId = 1;
+    mockAxios.onPost("/bugs").reply(200, { id: bugId, userId: null });
+    mockAxios
+      .onPatch(`/bugs/${bugId}`)
+      .reply(200, { id: bugId, userId: userId });
 
-  it("removeBug", () => {});
+    await store.dispatch(addBug({ description: "a" }));
+    await store.dispatch(assignBugToUser({ bugId: bugId, userId: userId }));
+
+    expect(bugsSlice().list[0].userId).toBe(userId);
+  });
+
+  it("should not assignBugToUser if there is an error on the server side", async () => {
+    const userId = 1;
+    const bugId = 1;
+    mockAxios.onPost("/bugs").reply(200, { id: bugId, userId: null });
+    mockAxios.onPatch(`/bugs/${bugId}`).reply(500);
+
+    await store.dispatch(addBug({ description: "a" }));
+    await store.dispatch(assignBugToUser({ bugId: bugId, userId: userId }));
+
+    expect(bugsSlice().list[0].userId).toBe(null);
+  });
 
   describe("loading bugs", () => {
     describe("if the bugs exist in the catch", () => {
@@ -144,6 +195,21 @@ describe("bugsSlice", () => {
       expect(result).toHaveLength(2);
     }); // it: getUnresoledBugs
 
-    it("getBugsByUser", () => {});
+    it("getBugsByUser", () => {
+      const state = createDummyState();
+      state.entities.bugs.list = [
+        { id: 1, userId: 1 },
+        { id: 2, userId: 2 },
+        { id: 3, userId: 3 },
+        { id: 4, userId: 1 },
+        { id: 5, userId: 1 },
+      ];
+
+      console.log(state.entities.bugs.list);
+      const result = getBugsByUser({ userId: 1 })(state);
+      console.log(result);
+
+      // expect(result).toHaveLength(3);
+    });
   }); // describe: selectors
 }); // describe: bugsSlice
